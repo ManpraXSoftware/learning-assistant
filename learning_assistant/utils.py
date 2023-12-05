@@ -54,12 +54,14 @@ def get_chat_response(system_list, message_list):
     completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API', None)
     completion_endpoint_key = getattr(settings, 'CHAT_COMPLETION_API_KEY', None)
     if completion_endpoint and completion_endpoint_key:
-        headers = {'Content-Type': 'application/json', 'x-api-key': completion_endpoint_key}
+        headers = {'Content-Type': 'application/json', 'Authorization': f"Bearer {completion_endpoint_key}"}
         connect_timeout = getattr(settings, 'CHAT_COMPLETION_API_CONNECT_TIMEOUT', 1)
         read_timeout = getattr(settings, 'CHAT_COMPLETION_API_READ_TIMEOUT', 15)
 
         reduced_messages = get_reduced_message_list(system_list, message_list)
-        body = {'message_list': system_list + reduced_messages}
+        body = {"model": "gpt-3.5-turbo",
+                'messages': system_list + reduced_messages,
+                "temperature": 0.7}
 
         try:
             response = requests.post(
@@ -83,4 +85,4 @@ def get_chat_response(system_list, message_list):
         response_status = http_status.HTTP_404_NOT_FOUND
         chat = 'Completion endpoint is not defined.'
 
-    return response_status, chat
+    return response_status, chat['choices'][0]['message']

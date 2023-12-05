@@ -66,7 +66,7 @@ class CourseChatView(APIView):
                 data={'detail': 'Must be staff or have valid enrollment.'}
             )
 
-        prompt_messages = get_setup_messages(course_id)
+        prompt_messages = get_setup_messages(course_key)
         if not prompt_messages:
             return Response(
                 status=http_status.HTTP_404_NOT_FOUND,
